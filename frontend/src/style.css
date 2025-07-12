@@ -1,0 +1,461 @@
+/* Estilos personalizados para InterPolice */
+
+:root {
+  --primary-color: #0d6efd;
+  --success-color: #198754;
+  --warning-color: #ffc107;
+  --danger-color: #dc3545;
+  --dark-color: #212529;
+  --light-color: #f8f9fa;
+}
+
+/* Estilos generales */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+}
+
+/* Navbar personalizado */
+.navbar-brand {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+/* Cards personalizadas */
+.card {
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  border-radius: 15px 15px 0 0 !important;
+  font-weight: 600;
+}
+
+/* Botones personalizados */
+.btn {
+  border-radius: 10px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-lg {
+  padding: 12px 30px;
+  font-size: 1.1rem;
+}
+
+/* Formularios personalizados */
+.form-control, .form-select {
+  border-radius: 10px;
+  border: 2px solid #e9ecef;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.form-label {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.5rem;
+}
+
+/* Tablas personalizadas */
+.table {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.table thead th {
+  background-color: #343a40;
+  color: white;
+  font-weight: 600;
+  border: none;
+  padding: 15px 12px;
+}
+
+.table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.table tbody tr:hover {
+  background-color: rgba(13, 110, 253, 0.05);
+}
+
+.table td {
+  padding: 12px;
+  vertical-align: middle;
+}
+
+/* Iconos personalizados */
+.bi {
+  font-size: 1.1em;
+}
+
+/* Header personalizado */
+.display-5 {
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.lead {
+  font-size: 1.1rem;
+  font-weight: 400;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 15px;
+  }
+  
+  .card-body {
+    padding: 1.5rem;
+  }
+  
+  .btn-lg {
+    padding: 10px 20px;
+    font-size: 1rem;
+  }
+  
+  .display-5 {
+    font-size: 2rem;
+  }
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card {
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* Estados de botones */
+.btn-success {
+  background-color: var(--success-color);
+  border-color: var(--success-color);
+}
+
+.btn-success:hover {
+  background-color: #157347;
+  border-color: #157347;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+  background-color: #0b5ed7;
+  border-color: #0b5ed7;
+}
+
+/* Estilos para mensajes de alerta */
+.alert {
+  border-radius: 10px;
+  border: none;
+  font-weight: 500;
+}
+
+/* Estilos para badges */
+.badge {
+  border-radius: 8px;
+  font-weight: 500;
+  padding: 0.5em 0.8em;
+}
+
+/* Estilos para tooltips */
+.tooltip {
+  font-size: 0.875rem;
+}
+
+/* Estilos para modales */
+.modal-content {
+  border-radius: 15px;
+  border: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  border-radius: 15px 15px 0 0;
+  border-bottom: 1px solid #dee2e6;
+}
+
+/* Estilos para paginación */
+.pagination .page-link {
+  border-radius: 8px;
+  margin: 0 2px;
+  border: none;
+  color: var(--primary-color);
+}
+
+.pagination .page-item.active .page-link {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+/* Estilos para dropdowns */
+.dropdown-menu {
+  border-radius: 10px;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.dropdown-item {
+  border-radius: 5px;
+  margin: 2px 5px;
+  transition: background-color 0.2s ease;
+}
+
+/* Estilos para spinners */
+.spinner-border {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+/* Estilos para progress bars */
+.progress {
+  border-radius: 10px;
+  height: 8px;
+}
+
+.progress-bar {
+  border-radius: 10px;
+}
+
+/* Estilos para list groups */
+.list-group-item {
+  border-radius: 8px;
+  margin-bottom: 5px;
+  border: 1px solid #e9ecef;
+}
+
+/* Estilos para breadcrumbs */
+.breadcrumb {
+  background-color: transparent;
+  padding: 0;
+  margin-bottom: 1rem;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  content: ">";
+  color: #6c757d;
+}
+
+/* Estilos para accordion */
+.accordion-item {
+  border-radius: 10px;
+  border: 1px solid #e9ecef;
+  margin-bottom: 10px;
+}
+
+.accordion-button {
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+/* Estilos para carousel */
+.carousel-item {
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+/* Estilos para offcanvas */
+.offcanvas {
+  border-radius: 0 15px 15px 0;
+}
+
+/* Estilos para placeholders */
+.placeholder {
+  border-radius: 8px;
+}
+
+/* Estilos para toasts */
+.toast {
+  border-radius: 10px;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilos para popovers */
+.popover {
+  border-radius: 10px;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilos para tooltips */
+.tooltip .tooltip-inner {
+  border-radius: 8px;
+  font-size: 0.875rem;
+}
+
+/* Estilos para badges de estado */
+.badge.bg-success {
+  background-color: var(--success-color) !important;
+}
+
+.badge.bg-warning {
+  background-color: var(--warning-color) !important;
+  color: #000;
+}
+
+.badge.bg-danger {
+  background-color: var(--danger-color) !important;
+}
+
+.badge.bg-info {
+  background-color: #0dcaf0 !important;
+}
+
+/* Estilos para iconos de acción en tablas */
+.btn-sm {
+  border-radius: 6px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+.btn-group .btn {
+  border-radius: 6px;
+}
+
+/* Estilos para formularios de búsqueda */
+.input-group {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.input-group-text {
+  background-color: #f8f9fa;
+  border: 2px solid #e9ecef;
+  border-right: none;
+}
+
+.input-group .form-control {
+  border-left: none;
+}
+
+/* Estilos para filtros */
+.filter-section {
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Estilos para estadísticas */
+.stats-card {
+  background: linear-gradient(135deg, var(--primary-color), #0b5ed7);
+  color: white;
+  border-radius: 15px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.stats-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.stats-label {
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+/* Estilos para gráficos */
+.chart-container {
+  background-color: white;
+  border-radius: 15px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos para notificaciones */
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: var(--danger-color);
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Estilos para loading states */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+/* Estilos para empty states */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #6c757d;
+}
+
+.empty-state .bi {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+/* Estilos para errores */
+.error-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--danger-color);
+}
+
+.error-state .bi {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+/* Estilos para éxito */
+.success-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--success-color);
+}
+
+.success-state .bi {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
