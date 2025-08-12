@@ -2,14 +2,28 @@ import db from '../../config/dbconexion.js';
 
 // Obtener todos los ciudadanos
 export async function getAllCiudadanos() {
-  const [rows] = await db.query('SELECT * FROM Ciudadano');
-  return rows;
+  try {
+    console.log('Ejecutando getAllCiudadanos...');
+    const [rows] = await db.query('SELECT * FROM Ciudadano');
+    console.log('Ciudadanos obtenidos:', rows);
+    return rows;
+  } catch (error) {
+    console.error('Error en getAllCiudadanos:', error);
+    throw error;
+  }
 }
 
 // Obtener ciudadano por ID
 export async function getCiudadanoById(id) {
-  const [rows] = await db.query('SELECT * FROM Ciudadano WHERE codigo = ?', [id]);
-  return rows[0];
+  try {
+    console.log('Ejecutando getCiudadanoById con ID:', id);
+    const [rows] = await db.query('SELECT * FROM Ciudadano WHERE codigo = ?', [id]);
+    console.log('Ciudadano encontrado:', rows[0]);
+    return rows[0];
+  } catch (error) {
+    console.error('Error en getCiudadanoById:', error);
+    throw error;
+  }
 }
 
 // Crear ciudadano

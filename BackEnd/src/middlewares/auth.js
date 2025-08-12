@@ -1,13 +1,21 @@
 const jwt = require('jsonwebtoken');
 
 function verificarToken(req, res, next) {
-  const token = req.headers['authorization'];
-  if (!token) return res.status(401).json({ error: 'Token requerido' });
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) return res.status(403).json({ error: 'Token inválido' });
-    req.user = decoded;
+  try{
+    const token = req.headers['authorization'];
+
+    if (!token) return res.status(401).json({ error: 'Token requerido' });
+
+    let tokenOk = jwt.verify(token, process.env.SALT);
+    
     next();
-  });
+  }
+  catch (error) {
+    res.status(401).send({
+      status: "Error",
+      message: 'No autorizado: ' + error
+    });
+  }
 }
 
 function verificarRol(roles = []) {

@@ -5,15 +5,18 @@ import {
   createUsuario,
   updateUsuario,
   deleteUsuario,
+  authUsuario,
 } from "./usuario.controller.js";
+import * as midelware from '../../middlewares/auth.js';
 
 const router = express.Router();
 
-// Rutas para Usuarios
-router.get("/listarUsuarios", getUsuarios);
-router.get("/listarUsuario/:id", getUsuario);
-router.post("/crearUsuario", createUsuario);
-router.put("/actualizarUsuario/:id", updateUsuario);
-router.delete("/borrarUsuario/:id", deleteUsuario);
+// Rutas RESTful estándar
+router.get("/", getUsuarios); // GET /api/usuarios
+router.get("/:id", getUsuario); // GET /api/usuarios/:id
+router.post("/", createUsuario); // POST /api/usuarios
+router.post("/login", authUsuario); // POST /api/usuarios/login
+router.put("/:id", updateUsuario); // PUT /api/usuarios/:id
+router.delete("/:id", deleteUsuario); // DELETE /api/usuarios/:id
 
 export default router;

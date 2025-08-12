@@ -1,4 +1,4 @@
-import { getUsuarios, createUsuario, deleteUsuario } from '../api/usuarioApi.js';
+import { getUsuarios, createUsuario, deleteUsuario, getUsuario, updateUsuario } from '../api/usuarioApi.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   await cargarUsuarios();
@@ -12,97 +12,144 @@ document.addEventListener('DOMContentLoaded', async () => {
       rol_usuario: document.getElementById('rol_usuario').value,
       fecha_usuario: document.getElementById('fecha_usuario').value
     };
-    await createUsuario(usuario);
-    e.target.reset();
+    const id = document.getElementById('usuario_id').value;
+    if (id) {
+      await updateUsuario(id, usuario);
+    } else {
+      await createUsuario(usuario);
+    }
+    limpiarFormulario();
     await cargarUsuarios();
-    mostrarAlerta('Usuario agregado exitosamente', 'success');
   });
+
+  // Agregar botón para cancelar edición
+  const cancelarBtn = document.createElement('button');
+  cancelarBtn.type = 'button';
+  cancelarBtn.className = 'btn btn-secondary btn-lg ms-2';
+  cancelarBtn.innerHTML = '<i class="bi bi-x-circle me-2"></i>Cancelar';
+  cancelarBtn.onclick = limpiarFormulario;
+  document.getElementById('submitBtn').parentNode.appendChild(cancelarBtn);
 });
+
+function limpiarFormulario() {
+  document.getElementById('usuarioForm').reset();
+  document.getElementById('usuario_id').value = '';
+  document.getElementById('submitBtn').textContent = 'Agregar Usuario';
+}
 
 async function cargarUsuarios() {
   try {
-    const usuarios = await getUsuarios();
+    const respuesta = await getUsuarios();
+    console.log('Respuesta completa de getUsuarios:', respuesta);
+    
+    // Manejar la estructura de respuesta del backend
+    const lista = respuesta.data || respuesta;
+    const usuarios = Array.isArray(lista) ? lista : [];
+    
+    console.log('Lista de usuarios procesada:', usuarios);
+    
     const tbody = document.getElementById('usuariosTable');
     tbody.innerHTML = '';
-    
-    if (usuarios.length === 0) {
-      tbody.innerHTML = `
-        <tr>
-          <td colspan="6" class="text-center py-4">
-            <div class="empty-state">
-              <i class="bi bi-people"></i>
-              <p class="mt-2">No hay usuarios registrados</p>
-            </div>
-          </td>
-        </tr>
-      `;
-      return;
-    }
     
     usuarios.forEach(u => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td><span class="badge bg-secondary">${u.idUsuario}</span></td>
-        <td><strong>${u.nombre_usuario}</strong></td>
-        <td><i class="bi bi-envelope me-1"></i>${u.correo_usuario}</td>
-        <td><span class="badge bg-primary">${u.rol_usuario}</span></td>
-        <td><i class="bi bi-calendar me-1"></i>${formatearFecha(u.fecha_usuario)}</td>
+        <td>${u.idUsuario || ''}</td>
+        <td>${u.nombre_usuario || ''}</td>
+        <td>${u.correo_usuario || ''}</td>
+        <td>${u.rol_usuario || ''}</td>
+        <td>${u.fecha_usuario ? new Date(u.fecha_usuario).toLocaleDateString() : ''}</td>
         <td>
-          <div class="btn-group" role="group">
-            <button class="btn btn-outline-primary btn-sm" onclick="editarUsuario(${u.idUsuario})" title="Editar">
-              <i class="bi bi-pencil"></i>
-            </button>
-            <button class="btn btn-outline-danger btn-sm" onclick="confirmarEliminarUsuario(${u.idUsuario}, '${u.nombre_usuario}')" title="Eliminar">
-              <i class="bi bi-trash"></i>
-            </button>
-          </div>
+          <button onclick="editarUsuario(${u.idUsuario})">Editar</button>
+          <button onclick="eliminarUsuario(${u.idUsuario})">Eliminar</button>
         </td>
       `;
       tbody.appendChild(tr);
     });
   } catch (error) {
     console.error('Error al cargar usuarios:', error);
-    mostrarAlerta('Error al cargar usuarios', 'danger');
   }
 }
 
-function formatearFecha(fecha) {
-  if (!fecha) return 'N/A';
-  return new Date(fecha).toLocaleDateString('es-ES');
-}
+window.eliminarUsuario = async (id) => {
+  await deleteUsuario(id);
+  await cargarUsuarios();
+};
 
-function mostrarAlerta(mensaje, tipo) {
-  const alertContainer = document.createElement('div');
-  alertContainer.className = `alert alert-${tipo} alert-dismissible fade show position-fixed`;
-  alertContainer.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';
-  alertContainer.innerHTML = `
-    <i class="bi bi-${tipo === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
-    ${mensaje}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-  `;
-  document.body.appendChild(alertContainer);
-  
-  setTimeout(() => {
-    if (alertContainer.parentNode) {
-      alertContainer.remove();
+window.editarUsuario = async (id) => {
+  try {
+    const respuesta = await getUsuario(id);
+    console.log('Respuesta completa de getUsuario:', respuesta);
+    
+    if (!respuesta) {
+      alert('Usuario no encontrado');
+      return;
     }
-  }, 5000);
-}
+    
+    // Manejar la estructura de respuesta del backend
+    const usuario = respuesta.data || respuesta;
+    console.log('Datos del usuario:', usuario);
+    
+    if (!usuario) {
+      alert('Usuario no encontrado');
+      return;
+    }
+    
+    // Asignar valores a los campos del formulario
+    document.getElementById('usuario_id').value = usuario.idUsuario || '';
+    document.getElementById('nombre_usuario').value = usuario.nombre_usuario || '';
+    document.getElementById('correo_usuario').value = usuario.correo_usuario || '';
+    document.getElementById('password_usuario').value = usuario.password_usuario || '';
+    document.getElementById('rol_usuario').value = usuario.rol_usuario || '';
+    
+    // Manejar la fecha correctamente
+    if (usuario.fecha_usuario) {
+      try {
+        const fecha = new Date(usuario.fecha_usuario);
+        if (!isNaN(fecha.getTime())) {
+          const fechaFormateada = fecha.toISOString().split('T')[0];
+          document.getElementById('fecha_usuario').value = fechaFormateada;
+        } else {
+          console.warn('Fecha inválida:', usuario.fecha_usuario);
+          document.getElementById('fecha_usuario').value = '';
+        }
+      } catch (error) {
+        console.error('Error al procesar fecha:', error);
+        document.getElementById('fecha_usuario').value = '';
+      }
+    } else {
+      document.getElementById('fecha_usuario').value = '';
+    }
+    
+    document.getElementById('submitBtn').textContent = 'Actualizar Usuario';
+  } catch (error) {
+    console.error('Error al editar usuario:', error);
+    alert('Error al cargar los datos del usuario');
+  }
+}; 
 
-window.confirmarEliminarUsuario = async (id, nombre) => {
-  if (confirm(`¿Estás seguro de que quieres eliminar al usuario "${nombre}"?`)) {
-    try {
-      await deleteUsuario(id);
-      await cargarUsuarios();
-      mostrarAlerta('Usuario eliminado exitosamente', 'success');
-    } catch (error) {
-      console.error('Error al eliminar usuario:', error);
-      mostrarAlerta('Error al eliminar usuario', 'danger');
-    }
+// Función de prueba para verificar la conexión
+window.probarConexion = async () => {
+  try {
+    console.log('Probando conexión con el backend...');
+    const respuesta = await getUsuarios();
+    console.log('Respuesta de prueba:', respuesta);
+    alert('Conexión exitosa con el backend');
+  } catch (error) {
+    console.error('Error de conexión:', error);
+    alert('Error de conexión con el backend');
   }
 };
 
-window.editarUsuario = (id) => {
-  // Función para editar usuario (puede implementarse más adelante)
-  alert(`Función de edición para usuario ID: ${id} - En desarrollo`);
+// Función de prueba para obtener un usuario específico
+window.probarGetUsuario = async (id) => {
+  try {
+    console.log('Probando obtener usuario con ID:', id);
+    const respuesta = await getUsuario(id);
+    console.log('Respuesta de getUsuario:', respuesta);
+    alert('Usuario obtenido correctamente');
+  } catch (error) {
+    console.error('Error al obtener usuario:', error);
+    alert('Error al obtener usuario');
+  }
 }; 

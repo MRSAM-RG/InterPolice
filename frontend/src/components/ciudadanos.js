@@ -1,4 +1,4 @@
-import { getCiudadanos, createCiudadano, deleteCiudadano } from '../api/ciudadanoApi.js';
+import { getCiudadanos, createCiudadano, deleteCiudadano, getCiudadano, updateCiudadano } from '../api/ciudadanoApi.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   await cargarCiudadanos();
@@ -16,101 +16,155 @@ document.addEventListener('DOMContentLoaded', async () => {
       codigo_qr: document.getElementById('codigo_qr').value,
       estado_id_estado: document.getElementById('estado_id_estado').value
     };
-    await createCiudadano(ciudadano);
-    e.target.reset();
+    const id = document.getElementById('ciudadano_id').value;
+    if (id) {
+      await updateCiudadano(id, ciudadano);
+    } else {
+      await createCiudadano(ciudadano);
+    }
+    limpiarFormulario();
     await cargarCiudadanos();
-    mostrarAlerta('Ciudadano agregado exitosamente', 'success');
   });
+
+  // Agregar botón para cancelar edición
+  const cancelarBtn = document.createElement('button');
+  cancelarBtn.type = 'button';
+  cancelarBtn.className = 'btn btn-secondary btn-lg ms-2';
+  cancelarBtn.innerHTML = '<i class="bi bi-x-circle me-2"></i>Cancelar';
+  cancelarBtn.onclick = limpiarFormulario;
+  document.getElementById('submitBtnCiudadano').parentNode.appendChild(cancelarBtn);
 });
+
+function limpiarFormulario() {
+  document.getElementById('ciudadanoForm').reset();
+  document.getElementById('ciudadano_id').value = '';
+  document.getElementById('submitBtnCiudadano').textContent = 'Agregar Ciudadano';
+}
 
 async function cargarCiudadanos() {
   try {
-    const ciudadanos = await getCiudadanos();
+    const respuesta = await getCiudadanos();
+    console.log('Respuesta completa de getCiudadanos:', respuesta);
+    
+    // Manejar la estructura de respuesta del backend
+    const lista = respuesta.data || respuesta;
+    const ciudadanos = Array.isArray(lista) ? lista : [];
+    
+    console.log('Lista de ciudadanos procesada:', ciudadanos);
+    
     const tbody = document.getElementById('ciudadanosTable');
     tbody.innerHTML = '';
-    
-    if (ciudadanos.length === 0) {
-      tbody.innerHTML = `
-        <tr>
-          <td colspan="7" class="text-center py-4">
-            <div class="empty-state">
-              <i class="bi bi-person-badge"></i>
-              <p class="mt-2">No hay ciudadanos registrados</p>
-            </div>
-          </td>
-        </tr>
-      `;
-      return;
-    }
     
     ciudadanos.forEach(c => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td><span class="badge bg-secondary">${c.codigo}</span></td>
-        <td><strong>${c.nombre}</strong></td>
-        <td><strong>${c.apellido}</strong></td>
-        <td>${c.apodo ? `<span class="badge bg-info">${c.apodo}</span>` : '<span class="text-muted">Sin apodo</span>'}</td>
-        <td><i class="bi bi-globe me-1"></i>${c.planeta_origen}</td>
-        <td><i class="bi bi-house me-1"></i>${c.planeta_residencia}</td>
+        <td>${c.codigo || ''}</td>
+        <td>${c.nombre || ''}</td>
+        <td>${c.apellido || ''}</td>
+        <td>${c.apodo || ''}</td>
+        <td>${c.planeta_origen || ''}</td>
+        <td>${c.planeta_residencia || ''}</td>
         <td>
-          <div class="btn-group" role="group">
-            <button class="btn btn-outline-primary btn-sm" onclick="editarCiudadano(${c.codigo})" title="Editar">
-              <i class="bi bi-pencil"></i>
-            </button>
-            <button class="btn btn-outline-info btn-sm" onclick="verDetallesCiudadano(${c.codigo})" title="Ver detalles">
-              <i class="bi bi-eye"></i>
-            </button>
-            <button class="btn btn-outline-danger btn-sm" onclick="confirmarEliminarCiudadano(${c.codigo}, '${c.nombre} ${c.apellido}')" title="Eliminar">
-              <i class="bi bi-trash"></i>
-            </button>
-          </div>
+          <button onclick="editarCiudadano(${c.codigo})">Editar</button>
+          <button onclick="eliminarCiudadano(${c.codigo})">Eliminar</button>
         </td>
       `;
       tbody.appendChild(tr);
     });
   } catch (error) {
     console.error('Error al cargar ciudadanos:', error);
-    mostrarAlerta('Error al cargar ciudadanos', 'danger');
   }
 }
 
-function mostrarAlerta(mensaje, tipo) {
-  const alertContainer = document.createElement('div');
-  alertContainer.className = `alert alert-${tipo} alert-dismissible fade show position-fixed`;
-  alertContainer.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';
-  alertContainer.innerHTML = `
-    <i class="bi bi-${tipo === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
-    ${mensaje}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-  `;
-  document.body.appendChild(alertContainer);
-  
-  setTimeout(() => {
-    if (alertContainer.parentNode) {
-      alertContainer.remove();
-    }
-  }, 5000);
-}
-
-window.confirmarEliminarCiudadano = async (id, nombre) => {
-  if (confirm(`¿Estás seguro de que quieres eliminar al ciudadano "${nombre}"?`)) {
-    try {
-      await deleteCiudadano(id);
-      await cargarCiudadanos();
-      mostrarAlerta('Ciudadano eliminado exitosamente', 'success');
-    } catch (error) {
-      console.error('Error al eliminar ciudadano:', error);
-      mostrarAlerta('Error al eliminar ciudadano', 'danger');
-    }
+window.eliminarCiudadano = async (id) => {
+  try {
+    await deleteCiudadano(id);
+    await cargarCiudadanos();
+  } catch (error) {
+    console.error('Error al eliminar ciudadano:', error);
+    alert('Error al eliminar ciudadano');
   }
 };
 
-window.editarCiudadano = (id) => {
-  // Función para editar ciudadano (puede implementarse más adelante)
-  alert(`Función de edición para ciudadano ID: ${id} - En desarrollo`);
+window.editarCiudadano = async (id) => {
+  try {
+    const respuesta = await getCiudadano(id);
+    console.log('Respuesta completa de getCiudadano:', respuesta);
+    
+    if (!respuesta) {
+      alert('Ciudadano no encontrado');
+      return;
+    }
+    
+    // Manejar la estructura de respuesta del backend
+    const ciudadano = respuesta.data || respuesta;
+    console.log('Datos del ciudadano:', ciudadano);
+    
+    if (!ciudadano) {
+      alert('Ciudadano no encontrado');
+      return;
+    }
+    
+    // Asignar valores a los campos del formulario
+    document.getElementById('ciudadano_id').value = ciudadano.codigo || '';
+    document.getElementById('nombre').value = ciudadano.nombre || '';
+    document.getElementById('apellido').value = ciudadano.apellido || '';
+    document.getElementById('apodo').value = ciudadano.apodo || '';
+    
+    // Manejar la fecha correctamente
+    if (ciudadano.fecha_nacimiento) {
+      try {
+        const fecha = new Date(ciudadano.fecha_nacimiento);
+        if (!isNaN(fecha.getTime())) {
+          const fechaFormateada = fecha.toISOString().split('T')[0];
+          document.getElementById('fecha_nacimiento').value = fechaFormateada;
+        } else {
+          console.warn('Fecha inválida:', ciudadano.fecha_nacimiento);
+          document.getElementById('fecha_nacimiento').value = '';
+        }
+      } catch (error) {
+        console.error('Error al procesar fecha:', error);
+        document.getElementById('fecha_nacimiento').value = '';
+      }
+    } else {
+      document.getElementById('fecha_nacimiento').value = '';
+    }
+    
+    document.getElementById('planeta_origen').value = ciudadano.planeta_origen || '';
+    document.getElementById('planeta_residencia').value = ciudadano.planeta_residencia || '';
+    document.getElementById('foto').value = ciudadano.foto || '';
+    document.getElementById('codigo_qr').value = ciudadano.codigo_qr || '';
+    document.getElementById('estado_id_estado').value = ciudadano.estado_id_estado || '';
+    
+    document.getElementById('submitBtnCiudadano').textContent = 'Actualizar Ciudadano';
+  } catch (error) {
+    console.error('Error al editar ciudadano:', error);
+    alert('Error al cargar los datos del ciudadano');
+  }
 };
 
-window.verDetallesCiudadano = (id) => {
-  // Función para ver detalles del ciudadano (puede implementarse más adelante)
-  alert(`Función de detalles para ciudadano ID: ${id} - En desarrollo`);
+// Función de prueba para verificar la conexión
+window.probarConexionCiudadanos = async () => {
+  try {
+    console.log('Probando conexión con el backend (ciudadanos)...');
+    const respuesta = await getCiudadanos();
+    console.log('Respuesta de prueba:', respuesta);
+    alert('Conexión exitosa con el backend');
+  } catch (error) {
+    console.error('Error de conexión:', error);
+    alert('Error de conexión con el backend');
+  }
+};
+
+// Función de prueba para obtener un ciudadano específico
+window.probarGetCiudadano = async (id) => {
+  try {
+    console.log('Probando obtener ciudadano con ID:', id);
+    const respuesta = await getCiudadano(id);
+    console.log('Respuesta de getCiudadano:', respuesta);
+    alert('Ciudadano obtenido correctamente');
+  } catch (error) {
+    console.error('Error al obtener ciudadano:', error);
+    alert('Error al obtener ciudadano');
+  }
 }; 

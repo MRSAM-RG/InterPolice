@@ -7,6 +7,9 @@ export async function getUsuarios() {
 
 export async function getUsuario(id) {
   const res = await fetch(`${API_URL}/${id}`);
+  if (!res.ok) {
+    return null;
+  }
   return await res.json();
 }
 
